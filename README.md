@@ -1,6 +1,6 @@
 # LicencePlateScraper
 Système automatique pour constituer un dataset de plaque d'immatriculation de voiture par scraping et crawling
-
+![Cchéma global du projet](./imgSrc/global.png)
 
 
 ## Explications & contenu de ce dépôt
@@ -28,6 +28,7 @@ Système automatique pour constituer un dataset de plaque d'immatriculation de v
 | ------------- | ------------- |
 | Langage  | Python 3.7.6  |
 | Crawling & Scraping  | Scrapy  |
+| Gestion des CSV | Pandas |
 
 
 

@@ -3,6 +3,8 @@ import scrapy
 from scrapy.http import Request
 import pandas as pd
 import urllib.request
+from pydispatch import dispatcher
+from scrapy import signals
 
 
 # BYPASS du 403 forbidden :)
@@ -17,20 +19,27 @@ class ScrapperSpider(scrapy.Spider):
     start_urls = [
         "http://platesmania.com/fr/gallery-0"
     ]
-    csvFilepath = 'D:\\DeeplyLearning\\Github\\LicencePlateScaper\\data\\text\\data.csv'
+    csvFilepath = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\text\\dataScraped.csv'
 
     page = 0
-    maxPage = 5
+    maxPage = 25
 
-    DIRECTORY_IMG_PLATE = 'D:\\DeeplyLearning\\Github\\LicencePlateScaper\\data\\image\\plate\\'
-    DIRECTORY_IMG_GLOBAL = 'D:\\DeeplyLearning\\Github\\LicencePlateScaper\\data\\image\\car\\'
+    DIRECTORY_IMG_PLATE = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\image\\plate\\'
+    DIRECTORY_IMG_GLOBAL = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\image\\car\\'
 
     lastUpdatedDate = ''
     urllib.urlopener = AppURLopener()
 
+    GLOBAL_DATA = None
+
+
+
+    def __init__(self):
+        dispatcher.connect(self.end, signals.spider_closed)
+        dispatcher.connect(self.start, signals.spider_opened)
+
     def parse(self, response):
 
-        csvData = pd.read_csv(self.csvFilepath)
 
         imgContenerAll = response.xpath('.//div[@class="panel panel-grey"]')
 
@@ -72,14 +81,14 @@ class ScrapperSpider(scrapy.Spider):
                 'plateNumber': plateNumber
             }
 
-            isUnique = csvData[
-                (csvData['date'] == dateAjout) &
-                (csvData['heure'] == heureAjout) &
-                (csvData['voitureMarque'] == voitureMarque) &
-                (csvData['voitureModele'] == voitureModele) &
-                (csvData['imgGlobalName'] == imgGlobalName) &
-                (csvData['imgPlaqueName'] == imgPlateName) &
-                (csvData['plateNumber'] == plateNumber)
+            isUnique = self.GLOBAL_DATA[
+                (self.GLOBAL_DATA['date'] == dateAjout) &
+                (self.GLOBAL_DATA['heure'] == heureAjout) &
+                (self.GLOBAL_DATA['voitureMarque'] == voitureMarque) &
+                (self.GLOBAL_DATA['voitureModele'] == voitureModele) &
+                (self.GLOBAL_DATA['imgGlobalName'] == imgGlobalName) &
+                (self.GLOBAL_DATA['imgPlaqueName'] == imgPlateName) &
+                (self.GLOBAL_DATA['plateNumber'] == plateNumber)
 
             ]
 
@@ -87,13 +96,15 @@ class ScrapperSpider(scrapy.Spider):
                 urllib.urlopener.retrieve(urlImgGlobal, destinationFolderImgGlobal)
                 urllib.urlopener.retrieve(urlImgPlate, destinationFolderImgPlate)
 
-                csvData = csvData.append(row, ignore_index=True)
+                self.GLOBAL_DATA = self.GLOBAL_DATA.append(row, ignore_index=True)
 
-
-
-
-        csvData.to_csv(self.csvFilepath, encoding='utf-8', index=False)
 
         self.page += 1
         if self.page < self.maxPage:
             yield Request(url=self.baseUrl+str(self.page), callback=self.parse)
+
+    def start(self, spider):
+        self.GLOBAL_DATA = pd.read_csv(self.csvFilepath)
+
+    def end(self, spider):
+        self.GLOBAL_DATA.to_csv(self.csvFilepath, encoding='utf-8', index=False)

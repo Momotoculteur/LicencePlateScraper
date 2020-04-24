@@ -22,8 +22,8 @@ class PlateGenerator(scrapy.Spider):
     start_urls = [
         "http://platesmania.com/fr/informer"
     ]
-    destinationFolderPlateGenerated = 'D:\\DeeplyLearning\\Github\\LicencePlateScaper\\data\\image\\plateGenerated\\'
-    csvFilepath = 'D:\\DeeplyLearning\\Github\\LicencePlateScaper\\data\\text\\plateGenerated.csv'
+    destinationFolderPlateGenerated = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\image\\plateGenerated\\'
+    csvFilepath = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\text\\plateGenerated.csv'
     GLOBAL_DATA = None
     pbar = None
 
@@ -100,7 +100,6 @@ class PlateGenerator(scrapy.Spider):
 
     def end(self, spider):
         self.GLOBAL_DATA.to_csv(self.csvFilepath, encoding='utf-8', index=False)
-        print(self.GLOBAL_DATA)
 
     def generateRandomNumber(self, length):
         return ''.join(["{}".format(randint(0, 9)) for num in range(0, length)])

@@ -22,7 +22,7 @@ class ScrapperSpider(scrapy.Spider):
     csvFilepath = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\text\\dataScraped.csv'
 
     page = 0
-    maxPage = 25
+    maxPage = 50
 
     DIRECTORY_IMG_PLATE = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\image\\plate\\'
     DIRECTORY_IMG_GLOBAL = 'D:\\DeeplyLearning\\Github\\LicencePlateScraper\\data\\image\\car\\'
